@@ -537,9 +537,13 @@
         let secuenciaSecreta = [];
         const secuenciaCorrecta = ['no', 'si', 'no', 'si', 'no', 'si'];
 
+        // Contador de clicks consecutivos en NO
+        let clicksConsecutivosNo = 0;
+        const umbralClicksNo = 20; // Cantidad de clicks seguidos en NO para activar minijuego
+
         // Variables del modo batalla
         let batallaActiva = false;
-        let porcentajeSi = 50; // Empieza en 50%
+        let porcentajeSi = 50;
         let batallaTimer = null;
 
         const wrapperSi = document.getElementById('wrapperSi');
@@ -562,7 +566,6 @@
         const mensajeVictoria = document.getElementById('mensajeVictoria');
         const mensajeDerrota = document.getElementById('mensajeDerrota');
 
-        // Mensajes para cuando presiona "No" (balance negativo)
         const mensajesNo = [
             "¿Quieres ser mi San Valentín?",
             "¿Estás segura?",
@@ -581,7 +584,6 @@
             "Una oportunidad más"
         ];
 
-        // Mensajes motivadores cuando está recuperando terreno
         const mensajesRecuperacion = [
             "¡Así se hace!",
             "¡Continúa!",
@@ -600,7 +602,6 @@
             "¡Último esfuerzo!"
         ];
 
-        // Mensajes para cuando ya está en positivo
         const mensajesSi = [
             "¿Quieres ser mi San Valentín?",
             "¡Esa es mi chica!",
@@ -625,10 +626,25 @@
             if (secuenciaSecreta.length === 6) {
                 const coincide = secuenciaSecreta.every((val, idx) => val === secuenciaCorrecta[idx]);
                 if (coincide) {
-                    mostrarCuentaRegresiva();
+                    activarMinijuego();
                 }
                 secuenciaSecreta = [];
             }
+        }
+
+        function verificarClicksConsecutivosNo() {
+            // Si da muchos clicks en NO consecutivamente, activar minijuego
+            if (clicksConsecutivosNo >= umbralClicksNo) {
+                activarMinijuego();
+                clicksConsecutivosNo = 0;
+            }
+        }
+
+        function activarMinijuego() {
+            // Resetear secuencia
+            secuenciaSecreta = [];
+            clicksConsecutivosNo = 0;
+            mostrarCuentaRegresiva();
         }
 
         function mostrarCuentaRegresiva() {
@@ -651,16 +667,13 @@
         }
 
         function calcularDificultad() {
-            // Progresión 0.8x a 1.2x según el porcentaje
             const factorDificultad = 0.8 + ((porcentajeSi - 50) / 50) * 0.4;
             return Math.max(0.8, factorDificultad);
         }
 
         function iniciarModoBatalla() {
-            // Ocultar cuenta regresiva
             cuentaRegresiva.classList.add('oculto');
             
-            // Mostrar elementos de batalla
             batallaTitulo.classList.remove('oculto');
             batallaSubtitulo.classList.remove('oculto');
             batallaProgreso.classList.remove('oculto');
@@ -671,11 +684,9 @@
             porcentajeSi = 50;
             actualizarBarraBatalla();
             
-            // Auto-incremento del NO
             batallaTimer = setInterval(() => {
                 if (batallaActiva) {
                     const dificultad = calcularDificultad();
-                    
                     const empujeBase = (Math.random() * 1.5) + 1.5;
                     const empujeNo = empujeBase * dificultad;
                     porcentajeSi -= empujeNo;
@@ -723,30 +734,25 @@
             clearInterval(batallaTimer);
             
             if (ganador === 'si') {
-                // Ocultar elementos de batalla
                 batallaTitulo.classList.add('oculto');
                 batallaSubtitulo.classList.add('oculto');
                 batallaProgreso.classList.add('oculto');
                 batallaBarraContainer.classList.add('oculto');
                 batallaBotones.classList.add('oculto');
                 
-                // Mostrar mensaje de victoria con lluvia de corazones
                 mensajeVictoria.classList.remove('oculto');
                 crearCorazonesLluvia();
                 
-                // Esperar 3 segundos y redirigir
                 setTimeout(() => {
                     window.location.href = 'carta.html';
                 }, 3000);
             } else {
-                // Ocultar elementos de batalla
                 batallaTitulo.classList.add('oculto');
                 batallaSubtitulo.classList.add('oculto');
                 batallaProgreso.classList.add('oculto');
                 batallaBarraContainer.classList.add('oculto');
                 batallaBotones.classList.add('oculto');
                 
-                // Mostrar mensaje de derrota (SE QUEDA AHÍ PERMANENTEMENTE)
                 mensajeDerrota.classList.remove('oculto');
             }
         }
@@ -864,6 +870,9 @@
             contadorSi++;
             balance++;
             
+            // Resetear contador de clicks consecutivos en NO
+            clicksConsecutivosNo = 0;
+            
             secuenciaSecreta.push('si');
             if (secuenciaSecreta.length > 6) {
                 secuenciaSecreta.shift();
@@ -892,6 +901,12 @@
             balance--;
             estaRecuperando = false;
 
+            // Incrementar clicks consecutivos en NO
+            clicksConsecutivosNo++;
+            
+            // Verificar si activa el minijuego por clicks consecutivos
+            verificarClicksConsecutivosNo();
+
             secuenciaSecreta.push('no');
             if (secuenciaSecreta.length > 6) {
                 secuenciaSecreta.shift();
@@ -911,6 +926,7 @@
                 contadorSi = 0;
                 balance = 0;
                 estaRecuperando = false;
+                clicksConsecutivosNo = 0;
                 
                 setTimeout(() => {
                     pregunta.textContent = "¿Quieres ser mi San Valentín?";
