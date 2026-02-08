@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Valentín 💕</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: #f5f5f5;
+        }
+
+        /* Header minimalista */
+        .header {
+            background: #ffffff;
+            padding: 30px 20px 40px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* GIF Container */
+        .gif-container {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .gif-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            font-size: 2.2em;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        /* Contenedor de botones */
+        .buttons-container {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            transition: transform 0.1s ease;
+        }
+
+        /* Animación de temblor suave */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease;
+        }
+
+        /* Botones minimalistas */
+        .btn-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #wrapperSi {
+            background: #ffffff;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        #wrapperSi:hover {
+            background: #f8f8f8;
+        }
+
+        #wrapperNo {
+            background: #fafafa;
+            border-left: 1px solid #e0e0e0;
+        }
+
+        #wrapperNo:hover {
+            background: #f0f0f0;
+        }
+
+        .btn-content {
+            color: #1a1a1a;
+            font-size: 4em;
+            font-weight: 900;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        /* Efecto al hacer click */
+        .btn-wrapper:active .btn-content {
+            transform: scale(0.95);
+        }
+
+        /* MODO BATALLA - SMASH BUTTON */
+        .batalla-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 40px;
+        }
+
+        .batalla-overlay.active {
+            display: flex;
+        }
+
+        /* Cuenta regresiva */
+        .cuenta-regresiva {
+            color: #fff;
+            font-size: 15em;
+            font-weight: 900;
+            animation: aparecer 1s ease;
+            text-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes aparecer {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .batalla-titulo {
+            color: #fff;
+            font-size: 3em;
+            font-weight: 900;
+            text-transform: uppercase;
+            animation: pulsar 1s infinite;
+        }
+
+        @keyframes pulsar {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .batalla-subtitulo {
+            color: #ff6b6b;
+            font-size: 1.5em;
+            font-weight: 700;
+            animation: parpadeo 0.5s infinite;
+        }
+
+        @keyframes parpadeo {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .batalla-barra-container {
+            width: 80%;
+            max-width: 800px;
+            height: 60px;
+            background: #333;
+            border: 4px solid #fff;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .batalla-barra-si {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #66bb6a);
+            transition: width 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: 900;
+            font-size: 1.2em;
+            z-index: 2;
+        }
+
+        .batalla-barra-no {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #ef5350, #f44336);
+            transition: width 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 15px;
+            color: white;
+            font-weight: 900;
+            font-size: 1.2em;
+            z-index: 1;
+        }
+
+        .batalla-botones {
+            display: flex;
+            gap: 40px;
+        }
+
+        .batalla-btn {
+            padding: 30px 60px;
+            font-size: 3em;
+            font-weight: 900;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.1s ease;
+            user-select: none;
+        }
+
+        .batalla-btn-si {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .batalla-btn-si:active {
+            transform: scale(0.95);
+            background: #45a049;
+        }
+
+        .batalla-btn-no {
+            background: #f44336;
+            color: white;
+        }
+
+        .batalla-btn-no:active {
+            transform: scale(0.95);
+            background: #da190b;
+        }
+
+        .batalla-progreso {
+            color: #ffeb3b;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        /* Mensaje de victoria */
+        .mensaje-victoria {
+            color: #4CAF50;
+            font-size: 5em;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.2;
+            animation: aparecerVictoria 2s ease;
+            text-shadow: 0 0 40px rgba(76, 175, 80, 0.8);
+        }
+
+        @keyframes aparecerVictoria {
+            0% {
+                transform: scale(0) rotate(10deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(-5deg);
+            }
+            70% {
+                transform: scale(0.9) rotate(3deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Mensaje de derrota */
+        .mensaje-derrota {
+            color: #ff6b6b;
+            font-size: 5em;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.2;
+            animation: aparecerTriste 2s ease;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+        }
+
+        @keyframes aparecerTriste {
+            0% {
+                transform: scale(0) rotate(-10deg);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.1) rotate(5deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .oculto {
+            display: none !important;
+        }
+
+        /* Corazones pixelados flotantes */
+        .corazon-flotante {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 1000;
+            animation: flotar 2s ease-out forwards;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        @keyframes flotar {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-300px) scale(0.5) rotate(20deg);
+            }
+        }
+
+        /* Corazones que caen por toda la pantalla */
+        .corazon-caer {
+            position: fixed;
+            width: 35px;
+            height: 35px;
+            animation: caer 4s linear forwards;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        @keyframes caer {
+            0% {
+                top: -10%;
+                opacity: 1;
+                transform: rotate(0deg);
+            }
+            100% {
+                top: 110%;
+                opacity: 0.3;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gif-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+            
+            .btn-content {
+                font-size: 2.5em;
+            }
+
+            .header {
+                padding: 20px 15px 30px;
+            }
+
+            .cuenta-regresiva {
+                font-size: 10em;
+            }
+
+            .batalla-titulo {
+                font-size: 2em;
+            }
+
+            .batalla-subtitulo {
+                font-size: 1.2em;
+            }
+
+            .batalla-btn {
+                padding: 20px 40px;
+                font-size: 2em;
+            }
+
+            .mensaje-victoria,
+            .mensaje-derrota {
+                font-size: 3em;
+                padding: 0 20px;
+            }
+
+            .corazon-flotante,
+            .corazon-caer {
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gif-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            h1 {
+                font-size: 1.3em;
+            }
+            
+            .btn-content {
+                font-size: 2em;
+            }
+
+            .cuenta-regresiva {
+                font-size: 8em;
+            }
+
+            .batalla-titulo {
+                font-size: 1.5em;
+            }
+
+            .batalla-subtitulo {
+                font-size: 1em;
+            }
+
+            .batalla-btn {
+                padding: 15px 30px;
+                font-size: 1.5em;
+            }
+
+            .mensaje-victoria,
+            .mensaje-derrota {
+                font-size: 2em;
+                padding: 0 20px;
+            }
+
+            .corazon-flotante,
+            .corazon-caer {
+                width: 25px;
+                height: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="gif-container">
+            <img src="tu-gif.gif" alt="Animación" id="gifImagen">
+        </div>
+        <h1 id="pregunta">¿Quieres ser mi San Valentín?</h1>
+    </div>
+
+    <div class="buttons-container" id="buttonsContainer">
+        <div class="btn-wrapper" id="wrapperSi">
+            <div class="btn-content">Sí</div>
+        </div>
+        <div class="btn-wrapper" id="wrapperNo">
+            <div class="btn-content">No</div>
+        </div>
+    </div>
+
+    <!-- MODO BATALLA -->
+    <div class="batalla-overlay" id="batallaOverlay">
+        <!-- Cuenta regresiva -->
+        <div class="cuenta-regresiva" id="cuentaRegresiva">3</div>
+
+        <!-- Elementos de batalla (ocultos al inicio) -->
+        <div class="batalla-titulo oculto" id="batallaTitulo">¡SMASH BUTTON!</div>
+        <div class="batalla-subtitulo oculto" id="batallaSubtitulo">⚠️ CONSUME LA BARRA ROJA ⚠️</div>
+        <div class="batalla-progreso oculto" id="batallaProgreso">Progreso: 50%</div>
+        <div class="batalla-barra-container oculto" id="batallaBarraContainer">
+            <div class="batalla-barra-no" id="batallaNo">NO</div>
+            <div class="batalla-barra-si" id="batallaSi">SÍ</div>
+        </div>
+        <div class="batalla-botones oculto" id="batallaBotones">
+            <button class="batalla-btn batalla-btn-si" id="batallaBtnSi">SÍ</button>
+            <button class="batalla-btn batalla-btn-no" id="batallaBtnNo">NO</button>
+        </div>
+
+        <!-- Mensaje de victoria -->
+        <div class="mensaje-victoria oculto" id="mensajeVictoria">¡GANASTE<br>TU PREMIO<br>AMOR! 💝</div>
+
+        <!-- Mensaje de derrota -->
+        <div class="mensaje-derrota oculto" id="mensajeDerrota">No me amas<br>lo suficiente 💔</div>
+    </div>
+
+    <script>
+        let contadorSi = 0;
+        let contadorNo = 0;
+        let balance = 0;
+
+        // Secuencia secreta: No, Si, No, Si, No, Si
+        let secuenciaSecreta = [];
+        const secuenciaCorrecta = ['no', 'si', 'no', 'si', 'no', 'si'];
+
+        // Variables del modo batalla
+        let batallaActiva = false;
+        let porcentajeSi = 50; // Empieza en 50%
+        let batallaTimer = null;
+
+        const wrapperSi = document.getElementById('wrapperSi');
+        const wrapperNo = document.getElementById('wrapperNo');
+        const buttonsContainer = document.getElementById('buttonsContainer');
+        const pregunta = document.getElementById('pregunta');
+        const gifImagen = document.getElementById('gifImagen');
+        
+        const batallaOverlay = document.getElementById('batallaOverlay');
+        const cuentaRegresiva = document.getElementById('cuentaRegresiva');
+        const batallaTitulo = document.getElementById('batallaTitulo');
+        const batallaSubtitulo = document.getElementById('batallaSubtitulo');
+        const batallaProgreso = document.getElementById('batallaProgreso');
+        const batallaBtnSi = document.getElementById('batallaBtnSi');
+        const batallaBtnNo = document.getElementById('batallaBtnNo');
+        const batallaBarraSi = document.getElementById('batallaSi');
+        const batallaBarraNo = document.getElementById('batallaNo');
+        const batallaBarraContainer = document.getElementById('batallaBarraContainer');
+        const batallaBotones = document.getElementById('batallaBotones');
+        const mensajeVictoria = document.getElementById('mensajeVictoria');
+        const mensajeDerrota = document.getElementById('mensajeDerrota');
+
+        // Mensajes para cuando presiona "No" (balance negativo)
+        const mensajesNo = [
+            "¿Quieres ser mi San Valentín?",
+            "¿Estás segura?",
+            "¿De verdad no?",
+            "Piénsalo mejor...",
+            "Dale una oportunidad",
+            "No seas malita",
+            "¿Por favor?",
+            "Te voy a extrañar",
+            "Solo di que sí",
+            "¿Y si lo intentamos?",
+            "No me hagas esto",
+            "Recapacita por favor",
+            "¿Segura segura?",
+            "Mi corazón se rompe",
+            "Una oportunidad más"
+        ];
+
+        // Mensajes motivadores cuando está recuperando terreno
+        const mensajesRecuperacion = [
+            "¡Así se hace!",
+            "¡Continúa!",
+            "¡Vas por buen camino!",
+            "¡Sigue así!",
+            "¡Casi lo logras!",
+            "¡No te detengas!",
+            "¡Estás ganando!",
+            "¡Hay una sorpresa!",
+            "¡Ya falta poco!",
+            "¡Vamos bien!",
+            "¡Eso es!",
+            "¡Cada vez más cerca!",
+            "¡No pares ahora!",
+            "¡Te estás acercando!",
+            "¡Último esfuerzo!"
+        ];
+
+        // Mensajes para cuando ya está en positivo
+        const mensajesSi = [
+            "¿Quieres ser mi San Valentín?",
+            "¡Esa es mi chica!",
+            "¡Sabía que dirías que sí!",
+            "¡Me haces tan feliz!",
+            "¡Eres la mejor!",
+            "¡Te adoro!",
+            "¡Perfecto!",
+            "¡Seremos felices!",
+            "¡El mejor día de mi vida!",
+            "¡Te amo!",
+            "¡Gracias mi amor!",
+            "¡Eres increíble!",
+            "¡No me arrepiento de nada!",
+            "¡Juntos por siempre!",
+            "¡Preparando todo para ti!"
+        ];
+
+        let estaRecuperando = false;
+
+        function verificarSecuenciaSecreta() {
+            if (secuenciaSecreta.length === 6) {
+                const coincide = secuenciaSecreta.every((val, idx) => val === secuenciaCorrecta[idx]);
+                if (coincide) {
+                    mostrarCuentaRegresiva();
+                }
+                secuenciaSecreta = [];
+            }
+        }
+
+        function mostrarCuentaRegresiva() {
+            batallaOverlay.classList.add('active');
+            
+            let contador = 3;
+            cuentaRegresiva.textContent = contador;
+            
+            const intervalo = setInterval(() => {
+                contador--;
+                if (contador > 0) {
+                    cuentaRegresiva.textContent = contador;
+                } else if (contador === 0) {
+                    cuentaRegresiva.textContent = '¡EMPIEZA!';
+                } else {
+                    clearInterval(intervalo);
+                    iniciarModoBatalla();
+                }
+            }, 1000);
+        }
+
+        function calcularDificultad() {
+            // Progresión 0.8x a 1.2x según el porcentaje
+            const factorDificultad = 0.8 + ((porcentajeSi - 50) / 50) * 0.4;
+            return Math.max(0.8, factorDificultad);
+        }
+
+        function iniciarModoBatalla() {
+            // Ocultar cuenta regresiva
+            cuentaRegresiva.classList.add('oculto');
+            
+            // Mostrar elementos de batalla
+            batallaTitulo.classList.remove('oculto');
+            batallaSubtitulo.classList.remove('oculto');
+            batallaProgreso.classList.remove('oculto');
+            batallaBarraContainer.classList.remove('oculto');
+            batallaBotones.classList.remove('oculto');
+            
+            batallaActiva = true;
+            porcentajeSi = 50;
+            actualizarBarraBatalla();
+            
+            // Auto-incremento del NO
+            batallaTimer = setInterval(() => {
+                if (batallaActiva) {
+                    const dificultad = calcularDificultad();
+                    
+                    const empujeBase = (Math.random() * 1.5) + 1.5;
+                    const empujeNo = empujeBase * dificultad;
+                    porcentajeSi -= empujeNo;
+                    
+                    porcentajeSi = Math.max(0, Math.min(100, porcentajeSi));
+                    
+                    actualizarBarraBatalla();
+                    verificarGanadorBatalla();
+                }
+            }, 100);
+        }
+
+        function actualizarBarraBatalla() {
+            batallaBarraSi.style.width = porcentajeSi + '%';
+            batallaBarraNo.style.width = '100%';
+            
+            const progreso = Math.floor(porcentajeSi);
+            batallaProgreso.textContent = `Progreso: ${progreso}%`;
+            
+            if (progreso >= 80) {
+                batallaProgreso.style.color = '#4CAF50';
+                batallaSubtitulo.textContent = '🔥 ¡CASI LO LOGRAS! 🔥';
+            } else if (progreso >= 60) {
+                batallaProgreso.style.color = '#ffeb3b';
+                batallaSubtitulo.textContent = '⚡ ¡SIGUE ASÍ! ⚡';
+            } else if (progreso <= 30) {
+                batallaProgreso.style.color = '#f44336';
+                batallaSubtitulo.textContent = '⚠️ ¡CUIDADO! ⚠️';
+            } else {
+                batallaProgreso.style.color = '#ffeb3b';
+                batallaSubtitulo.textContent = '⚠️ CONSUME LA BARRA ROJA ⚠️';
+            }
+        }
+
+        function verificarGanadorBatalla() {
+            if (porcentajeSi >= 100) {
+                finalizarBatalla('si');
+            } else if (porcentajeSi <= 0) {
+                finalizarBatalla('no');
+            }
+        }
+
+        function finalizarBatalla(ganador) {
+            batallaActiva = false;
+            clearInterval(batallaTimer);
+            
+            if (ganador === 'si') {
+                // Ocultar elementos de batalla
+                batallaTitulo.classList.add('oculto');
+                batallaSubtitulo.classList.add('oculto');
+                batallaProgreso.classList.add('oculto');
+                batallaBarraContainer.classList.add('oculto');
+                batallaBotones.classList.add('oculto');
+                
+                // Mostrar mensaje de victoria con lluvia de corazones
+                mensajeVictoria.classList.remove('oculto');
+                crearCorazonesLluvia();
+                
+                // Esperar 3 segundos y redirigir
+                setTimeout(() => {
+                    window.location.href = 'carta.html';
+                }, 3000);
+            } else {
+                // Ocultar elementos de batalla
+                batallaTitulo.classList.add('oculto');
+                batallaSubtitulo.classList.add('oculto');
+                batallaProgreso.classList.add('oculto');
+                batallaBarraContainer.classList.add('oculto');
+                batallaBotones.classList.add('oculto');
+                
+                // Mostrar mensaje de derrota (SE QUEDA AHÍ PERMANENTEMENTE)
+                mensajeDerrota.classList.remove('oculto');
+            }
+        }
+
+        batallaBtnSi.addEventListener('click', () => {
+            if (batallaActiva) {
+                porcentajeSi += 3;
+                porcentajeSi = Math.min(100, porcentajeSi);
+                actualizarBarraBatalla();
+                verificarGanadorBatalla();
+            }
+        });
+
+        batallaBtnNo.addEventListener('click', () => {
+            if (batallaActiva) {
+                porcentajeSi -= 3;
+                porcentajeSi = Math.max(0, porcentajeSi);
+                actualizarBarraBatalla();
+                verificarGanadorBatalla();
+            }
+        });
+
+        function actualizarMensaje() {
+            if (balance > 0) {
+                estaRecuperando = false;
+                const indice = Math.min(balance, mensajesSi.length - 1);
+                pregunta.textContent = mensajesSi[indice];
+            } else if (balance < 0) {
+                if (estaRecuperando) {
+                    const indice = Math.floor(Math.random() * mensajesRecuperacion.length);
+                    pregunta.textContent = mensajesRecuperacion[indice];
+                } else {
+                    const indice = Math.min(Math.abs(balance), mensajesNo.length - 1);
+                    pregunta.textContent = mensajesNo[indice];
+                }
+            } else {
+                estaRecuperando = false;
+                pregunta.textContent = "¿Quieres ser mi San Valentín?";
+            }
+        }
+
+        function actualizarTamanos() {
+            if (balance > 0) {
+                const factorNo = Math.max(0.1, 1 / (1 + (balance * 0.08)));
+                const factorSi = 1 + (balance * 0.08);
+                
+                wrapperNo.style.flex = factorNo;
+                wrapperSi.style.flex = factorSi;
+                
+            } else if (balance < 0) {
+                const factorNo = 1 + (Math.abs(balance) * 0.08);
+                const factorSi = Math.max(0.1, 1 / (1 + (Math.abs(balance) * 0.08)));
+                
+                wrapperNo.style.flex = factorNo;
+                wrapperSi.style.flex = factorSi;
+                
+            } else {
+                wrapperNo.style.flex = 1;
+                wrapperSi.style.flex = 1;
+            }
+        }
+
+        function crearCorazonesFlotantes(cantidad = 20) {
+            for (let i = 0; i < cantidad; i++) {
+                setTimeout(() => {
+                    const corazon = document.createElement('img');
+                    corazon.src = 'corazon.png';
+                    corazon.className = 'corazon-flotante';
+                    
+                    corazon.style.left = Math.random() * window.innerWidth + 'px';
+                    corazon.style.top = Math.random() * window.innerHeight + 'px';
+                    
+                    const tamano = 25 + Math.random() * 30;
+                    corazon.style.width = tamano + 'px';
+                    corazon.style.height = tamano + 'px';
+                    
+                    corazon.style.animationDuration = (1.5 + Math.random()) + 's';
+                    
+                    document.body.appendChild(corazon);
+                    
+                    setTimeout(() => corazon.remove(), 2000);
+                }, i * 30);
+            }
+        }
+
+        function crearCorazonesLluvia() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const corazon = document.createElement('img');
+                    corazon.src = 'corazon.png';
+                    corazon.className = 'corazon-caer';
+                    corazon.style.left = Math.random() * 100 + '%';
+                    corazon.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    corazon.style.animationDelay = Math.random() * 0.5 + 's';
+                    
+                    const tamano = 25 + Math.random() * 30;
+                    corazon.style.width = tamano + 'px';
+                    corazon.style.height = tamano + 'px';
+                    
+                    document.body.appendChild(corazon);
+                    
+                    setTimeout(() => corazon.remove(), 5000);
+                }, i * 40);
+            }
+        }
+
+        function hacerTemblar() {
+            buttonsContainer.classList.add('shake');
+            setTimeout(() => {
+                buttonsContainer.classList.remove('shake');
+            }, 400);
+        }
+
+        wrapperSi.addEventListener('click', (e) => {
+            contadorSi++;
+            balance++;
+            
+            secuenciaSecreta.push('si');
+            if (secuenciaSecreta.length > 6) {
+                secuenciaSecreta.shift();
+            }
+            verificarSecuenciaSecreta();
+            
+            if (balance <= 0) {
+                estaRecuperando = true;
+            }
+            
+            crearCorazonesFlotantes(15);
+            
+            actualizarMensaje();
+            actualizarTamanos();
+
+            if (balance >= 15) {
+                crearCorazonesLluvia();
+                setTimeout(() => {
+                    window.location.href = 'carta.html';
+                }, 1500);
+            }
+        });
+
+        wrapperNo.addEventListener('click', () => {
+            contadorNo++;
+            balance--;
+            estaRecuperando = false;
+
+            secuenciaSecreta.push('no');
+            if (secuenciaSecreta.length > 6) {
+                secuenciaSecreta.shift();
+            }
+            verificarSecuenciaSecreta();
+
+            hacerTemblar();
+
+            actualizarMensaje();
+            actualizarTamanos();
+
+            if (contadorNo >= 50) {
+                pregunta.textContent = "Ok.";
+                wrapperNo.style.flex = 1;
+                wrapperSi.style.flex = 1;
+                contadorNo = 0;
+                contadorSi = 0;
+                balance = 0;
+                estaRecuperando = false;
+                
+                setTimeout(() => {
+                    pregunta.textContent = "¿Quieres ser mi San Valentín?";
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

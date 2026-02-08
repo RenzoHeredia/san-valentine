@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Premio 💝</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Pétalos flotantes */
+        .petalo {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: rgba(255, 182, 193, 0.6);
+            border-radius: 50% 0 50% 50%;
+            animation: caerPetalo 8s infinite;
+            opacity: 0;
+        }
+
+        @keyframes caerPetalo {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Contenedor del GIF */
+        .gif-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1.5s ease;
+        }
+
+        .gif-container.fade-out {
+            opacity: 0;
+        }
+
+        .gif-container img {
+            max-width: 500px;
+            max-height: 500px;
+            width: 80%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* Contenedor de la carta */
+        .carta-container {
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 30px;
+            padding: 20px;
+            z-index: 1;
+            margin-top: 100px;
+        }
+
+        .carta-container.visible {
+            opacity: 1;
+        }
+
+        /* Sobre de la carta */
+        .sobre-wrapper {
+            position: relative;
+            width: 450px;
+            max-width: 90vw;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .sobre-wrapper:hover:not(.abierto) {
+            transform: scale(1.02);
+        }
+
+        .sobre-wrapper.abierto {
+            cursor: default;
+        }
+
+        /* Sobre rosa - cuerpo */
+        .sobre {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #ffb6c1 0%, #ff92a5 100%);
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        /* Tapa del sobre - FORMA DE TRIÁNGULO */
+        .sobre-tapa {
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #ff92a5 0%, #ff7a94 100%);
+            transform-origin: top center;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 10;
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .sobre-wrapper.abierto .sobre-tapa {
+            transform: rotateX(180deg);
+        }
+
+        /* Detalles del sobre */
+        .sobre-lineas {
+            position: absolute;
+            left: 30px;
+            bottom: 30px;
+            z-index: 1;
+        }
+
+        .sobre-lineas div {
+            height: 2px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-bottom: 3px;
+            border-radius: 2px;
+        }
+
+        .linea1 { width: 40px; }
+        .linea2 { width: 35px; }
+        .linea3 { width: 45px; }
+
+        .sobre-sello {
+            position: absolute;
+            right: 30px;
+            bottom: 30px;
+            width: 60px;
+            height: 60px;
+            border: 2px dashed rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7em;
+            color: rgba(0, 0, 0, 0.3);
+            text-align: center;
+            line-height: 1.2;
+            z-index: 1;
+        }
+
+        .sobre-texto-de {
+            position: absolute;
+            left: 30px;
+            bottom: 80px;
+            font-style: italic;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 0.9em;
+            z-index: 1;
+        }
+
+        .sobre-texto-para {
+            position: absolute;
+            right: 30px;
+            bottom: 110px;
+            font-style: italic;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 0.9em;
+            z-index: 1;
+        }
+
+        /* Carta que sale del sobre */
+        .carta-papel {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 380px;
+            background: #f5f5dc;
+            padding: 35px 30px;
+            border-radius: 5px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            opacity: 0;
+            z-index: 15;
+        }
+
+        .sobre-wrapper.abierto .carta-papel {
+            animation: salirCarta 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.8s forwards,
+                       cartaFlotante 3s ease-in-out 2s infinite;
+        }
+
+        @keyframes salirCarta {
+            0% {
+                top: 120px;
+                opacity: 0;
+                transform: translateX(-50%) scale(0.9);
+            }
+            100% {
+                top: -200px;
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+        }
+
+        @keyframes cartaFlotante {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateX(-50%) translateY(-8px) rotate(1deg);
+            }
+            50% {
+                transform: translateX(-50%) translateY(0) rotate(-1deg);
+            }
+            75% {
+                transform: translateX(-50%) translateY(-8px) rotate(0.5deg);
+            }
+        }
+
+        /* Título con efecto manuscrito */
+        .carta-titulo {
+            font-family: 'Caveat', cursive;
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #ff6b8a;
+            margin-bottom: 20px;
+            animation: escribir 2s ease 2s forwards;
+            opacity: 0;
+        }
+
+        .sobre-wrapper.abierto .carta-titulo {
+            animation: escribir 1.5s ease 2.2s forwards, balancear 2s ease-in-out 3.7s infinite;
+        }
+
+        @keyframes escribir {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes balancear {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(2deg);
+            }
+            75% {
+                transform: rotate(-2deg);
+            }
+        }
+
+        /* Contenido de la carta */
+        .carta-contenido {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .carta-linea {
+            font-family: 'Caveat', cursive;
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.4;
+            opacity: 0;
+            animation: aparecerLinea 0.8s ease forwards;
+        }
+
+        .sobre-wrapper.abierto .carta-linea:nth-child(1) {
+            animation-delay: 2.5s;
+        }
+
+        .sobre-wrapper.abierto .carta-linea:nth-child(2) {
+            animation-delay: 2.8s;
+        }
+
+        .sobre-wrapper.abierto .carta-linea:nth-child(3) {
+            animation-delay: 3.1s;
+        }
+
+        .sobre-wrapper.abierto .carta-linea:nth-child(4) {
+            animation-delay: 3.4s;
+        }
+
+        @keyframes aparecerLinea {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .destaque {
+            font-weight: 700;
+            color: #ff6b8a;
+            text-decoration: underline;
+            text-decoration-style: wavy;
+            text-decoration-color: #ffb6c1;
+        }
+
+        /* Corazón decorativo */
+        .carta-corazon {
+            font-size: 2em;
+            margin-top: 15px;
+            animation: latidoCorazon 1.5s infinite;
+            opacity: 0;
+        }
+
+        .sobre-wrapper.abierto .carta-corazon {
+            animation: aparecerLinea 0.8s ease 3.7s forwards, latidoCorazon 1.5s infinite 4.5s;
+        }
+
+        @keyframes latidoCorazon {
+            0%, 100% { transform: scale(1); }
+            10%, 30% { transform: scale(1.15); }
+            20%, 40% { transform: scale(1); }
+        }
+
+        /* Instrucción */
+        .instruccion {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 0.95em;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .sobre-wrapper.abierto + .instruccion {
+            opacity: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .carta-container {
+                margin-top: 80px;
+            }
+
+            .sobre-wrapper {
+                width: 350px;
+            }
+
+            .sobre {
+                height: 250px;
+            }
+
+            .sobre-tapa {
+                height: 125px;
+            }
+
+            .carta-papel {
+                padding: 30px 25px;
+                max-width: 320px;
+            }
+
+            .carta-titulo {
+                font-size: 1.8em;
+            }
+
+            .carta-linea {
+                font-size: 1.2em;
+            }
+
+            @keyframes salirCarta {
+                0% {
+                    top: 100px;
+                    opacity: 0;
+                    transform: translateX(-50%) scale(0.9);
+                }
+                100% {
+                    top: -220px;
+                    opacity: 1;
+                    transform: translateX(-50%) scale(1);
+                }
+            }
+
+            .gif-container img {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .carta-container {
+                margin-top: 60px;
+            }
+
+            .sobre-wrapper {
+                width: 300px;
+            }
+
+            .sobre {
+                height: 220px;
+            }
+
+            .sobre-tapa {
+                height: 110px;
+            }
+
+            .carta-papel {
+                padding: 25px 20px;
+                max-width: 260px;
+            }
+
+            .carta-titulo {
+                font-size: 1.5em;
+            }
+
+            .carta-linea {
+                font-size: 1.1em;
+                gap: 12px;
+            }
+
+            @keyframes salirCarta {
+                0% {
+                    top: 90px;
+                    opacity: 0;
+                    transform: translateX(-50%) scale(0.9);
+                }
+                100% {
+                    top: -200px;
+                    opacity: 1;
+                    transform: translateX(-50%) scale(1);
+                }
+            }
+
+            .sobre-texto-de,
+            .sobre-texto-para {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pétalos flotantes -->
+    <script>
+        for (let i = 0; i < 15; i++) {
+            const petalo = document.createElement('div');
+            petalo.className = 'petalo';
+            petalo.style.left = Math.random() * 100 + '%';
+            petalo.style.animationDelay = Math.random() * 8 + 's';
+            petalo.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            document.body.appendChild(petalo);
+        }
+    </script>
+
+    <!-- Contenedor del GIF inicial -->
+    <div class="gif-container" id="gifContainer">
+        <img src="gato-besando.gif" alt="Animación" id="gifInicial">
+    </div>
+
+    <!-- Contenedor de la carta -->
+    <div class="carta-container" id="cartaContainer">
+        <div class="sobre-wrapper" id="sobreWrapper">
+            <div class="sobre">
+                <div class="sobre-tapa"></div>
+                <div class="sobre-lineas">
+                    <div class="linea1"></div>
+                    <div class="linea2"></div>
+                    <div class="linea3"></div>
+                </div>
+                <div class="sobre-sello">
+                    LOVE<br>MAIL
+                </div>
+                <div class="sobre-texto-de">De: <span style="text-decoration: underline;">Renzo Heredia</span></div>
+                <div class="sobre-texto-para">Para: <span style="text-decoration: underline;">Fabiana Montoya</span></div>
+            </div>
+            <div class="carta-papel" id="cartaPapel">
+                <!-- TÍTULO CON EFECTO MANUSCRITO -->
+                <div class="carta-titulo">Amorcito,</div>
+                
+                <!-- CONTENIDO CON ANIMACIÓN LÍNEA POR LÍNEA -->
+                <div class="carta-contenido">
+                    <div class="carta-linea">Te invito a un <span class="destaque">early dinner</span> en</div>
+                    <div class="carta-linea destaque">Bouchon.</div>
+                    <div class="carta-linea">Calle 2 de mayo 715 - Miraflores</div>
+                    <div class="carta-linea">Cita: <span class="destaque">5:30 pm</span></div>
+                </div>
+
+                <!-- CORAZÓN DECORATIVO -->
+                <div class="carta-corazon">💕</div>
+            </div>
+        </div>
+        <div class="instruccion">Haz clic sobre el sobre para abrir</div>
+    </div>
+
+    <script>
+        const gifContainer = document.getElementById('gifContainer');
+        const cartaContainer = document.getElementById('cartaContainer');
+        const sobreWrapper = document.getElementById('sobreWrapper');
+        const cartaPapel = document.getElementById('cartaPapel');
+
+        // Esperar a que el GIF termine
+        setTimeout(() => {
+            gifContainer.classList.add('fade-out');
+            
+            setTimeout(() => {
+                gifContainer.style.display = 'none';
+                cartaContainer.classList.add('visible');
+            }, 1500);
+        }, 3000);
+
+        // Abrir el sobre al hacer clic
+        sobreWrapper.addEventListener('click', () => {
+            if (!sobreWrapper.classList.contains('abierto')) {
+                sobreWrapper.classList.add('abierto');
+            }
+        });
+    </script>
+</body>
+</html>
